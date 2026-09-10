@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="LMAO-World: teleoperation-free world model reinforcement learning for whole-body humanoid loco-manipulation.">
+  <meta name="keywords" content="humanoid robotics, world models, reinforcement learning, vision-language-action models, loco-manipulation">
+  <meta name="author" content="Anonymous Authors">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <meta property="og:title" content="LMAO-World">
+  <meta property="og:description" content="Loco-Manipulation VLA Optimization inside a World Model">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="media/figures/online_rl_three_tasks.png">
+  <title>LMAO-World</title>
+  <link rel="icon" href="static/icons/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="static/css/bulma.min.css">
+  <link rel="stylesheet" href="static/css/index.css">
+  <script defer src="static/js/index.js"></script>
+</head>
+
+<body>
+  <nav class="site-nav" aria-label="Project sections">
+    <div class="nav-inner">
+      <a class="nav-brand" href="#top" aria-label="LMAO-World home">
+        <span class="brand-mark">LW</span>
+        <span>LMAO-World</span>
+      </a>
+      <div class="nav-links">
+        <a href="#overview">Overview</a>
+        <a href="#data">Data</a>
+        <a href="#world-model">World Model</a>
+        <a href="#results">Results</a>
+      </div>
+    </div>
+  </nav>
+
+  <main id="top">
+    <section class="hero project-hero">
+      <div class="hero-body">
+        <div class="container is-max-widescreen">
+          <div class="hero-copy">
+            <p class="eyebrow">Whole-body humanoid learning without teleoperation</p>
+            <h1 class="publication-title">LMAO-World</h1>
+            <p class="title-expansion">
+              <span>L</span>oco-<span>M</span>anipulation VL<span>A</span>
+              <span>O</span>ptimization inside a <span>World</span> Model
+            </p>
+            <p class="anonymous-authors">Anonymous Authors</p>
+
+            <div class="publication-links" aria-label="Project resources">
+              <a class="project-button" href="media/paper.pdf">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M6 2h8l4 4v16H6zM14 2v5h5M9 13h6M9 17h6M9 9h2"/>
+                </svg>
+                <span>Paper</span>
+              </a>
+              <span class="project-button is-disabled" aria-disabled="true">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="m9 7 8 5-8 5zM3 4h18v16H3z"/>
+                </svg>
+                <span>Video finalizing</span>
+              </span>
+              <span class="project-button is-disabled" aria-disabled="true">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="m8 9-4 3 4 3M16 9l4 3-4 3M14 5l-4 14"/>
+                </svg>
+                <span>Code after review</span>
+              </span>
+            </div>
+          </div>
+
+          <!-- Replace this block with media/videos/hero.mp4 when the final cut is ready. -->
+          <div class="hero-video-placeholder" role="img" aria-label="Project video placeholder">
+            <div class="placeholder-grid"></div>
+            <div class="placeholder-track track-one"></div>
+            <div class="placeholder-track track-two"></div>
+            <div class="placeholder-content">
+              <span class="placeholder-kicker">PROJECT VIDEO</span>
+              <strong>Final cut in progress</strong>
+              <span>The complete system overview will appear here.</span>
+            </div>
+          </div>
+
+          <div class="stat-strip" aria-label="Project highlights">
+            <div class="stat">
+              <strong>0</strong>
+              <span>target-task teleoperation</span>
+            </div>
+            <div class="stat">
+              <strong>20</strong>
+              <span>real rollouts per task</span>
+            </div>
+            <div class="stat">
+              <strong>480</strong>
+              <span>WM rollouts per task</span>
+            </div>
+            <div class="stat">
+              <strong>75.0%</strong>
+              <span>mean DICE-RL success</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section abstract-section reveal">
+      <div class="container is-max-desktop">
+        <div class="section-heading centered-heading">
+          <p class="section-index">00</p>
+          <h2>Abstract</h2>
+        </div>
+        <div class="abstract-copy">
+          <p>
+            Reinforcement learning can improve vision-language-action policies beyond imitation, but real-robot exploration is costly and unsafe for humanoids, while direct optimization in reconstructed simulators can amplify sim-to-real errors. We present <strong>LMAO-World</strong>, a teleoperation-free pipeline that post-trains a synthetic-data humanoid VLA inside an action-conditioned video world model. A 3D Gaussian Splatting simulator supplies task demonstrations and manipulation and locomotion play data; 20 autonomous real-robot rollouts per task adapt the world model to deployment observations. Policy rollouts then couple generated video with whole-body dynamics and receive dense stage-aware progress rewards. Across three real-robot tasks, play data improves every evaluated world model metric, and DICE-RL raises mean success from 23.3% for behavior cloning to 75.0%.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="overview" class="section reveal">
+      <div class="container is-max-widescreen">
+        <div class="section-heading">
+          <p class="section-index">01</p>
+          <div>
+            <p class="section-kicker">Sim to dream to real</p>
+            <h2>A teleoperation-free policy flywheel</h2>
+          </div>
+        </div>
+
+        <figure class="paper-figure pipeline-figure">
+          <img src="media/figures/pipeline.png" alt="LMAO-World system pipeline" loading="lazy">
+          <figcaption>
+            Synthetic demonstrations initialize the VLA, simulated play data broadens world model dynamics, and autonomous real rollouts adapt the world model before policy optimization.
+          </figcaption>
+        </figure>
+
+        <div class="step-grid">
+          <article class="step-card">
+            <span class="step-number">1</span>
+            <h3>Simulate</h3>
+            <p>The LEGS simulator generates whole-body task demonstrations and broad manipulation and locomotion play data.</p>
+          </article>
+          <article class="step-card">
+            <span class="step-number">2</span>
+            <h3>Adapt</h3>
+            <p>A shared world model is mid-trained on play data, then adapted to each task with synthetic demonstrations and autonomous real rollouts.</p>
+          </article>
+          <article class="step-card">
+            <span class="step-number">3</span>
+            <h3>Optimize</h3>
+            <p>The VLA acts inside the adapted world model, while a stage-aware progress model supplies dense rewards for round-based RL.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="data" class="section section-tint reveal">
+      <div class="container is-max-widescreen">
+        <div class="section-heading">
+          <p class="section-index">02</p>
+          <div>
+            <p class="section-kicker">LEGS simulator</p>
+            <h2>Task demonstrations and play data</h2>
+            <p class="section-lede">Full-state planning supplies task data, while autonomous play data covers contact outcomes and locomotion-induced viewpoint changes.</p>
+          </div>
+        </div>
+
+        <div class="data-grid">
+          <article class="media-card demo-card">
+            <div class="video-frame">
+              <video muted loop playsinline controls preload="metadata" data-autoplay>
+                <source src="media/videos/task_demo.mp4" type="video/mp4">
+              </video>
+            </div>
+            <div class="media-copy">
+              <span class="media-label">TASK DATA</span>
+              <h3>Synthetic demonstrations</h3>
+              <p>Whole-body action sequences are generated from full-state planning and locomotion and manipulation primitives.</p>
+            </div>
+          </article>
+
+          <article class="media-card">
+            <div class="video-frame">
+              <video muted loop playsinline controls preload="metadata" data-autoplay>
+                <source src="media/videos/play_manipulation.mp4" type="video/mp4">
+              </video>
+            </div>
+            <div class="media-copy">
+              <span class="media-label">PLAY DATA</span>
+              <h3>Manipulation</h3>
+              <p>Randomized objects, grasp offsets, slips, misses, and collisions provide broad supervision for contact dynamics.</p>
+            </div>
+          </article>
+
+          <article class="media-card">
+            <div class="video-frame portrait-video">
+              <video muted loop playsinline controls preload="metadata" data-autoplay>
+                <source src="media/videos/play_locomotion.mp4" type="video/mp4">
+              </video>
+            </div>
+            <div class="media-copy">
+              <span class="media-label">PLAY DATA</span>
+              <h3>Locomotion</h3>
+              <p>Approaches, turns, and long-range walking expose the model to large egocentric viewpoint changes.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="world-model" class="section reveal">
+      <div class="container is-max-widescreen">
+        <div class="section-heading">
+          <p class="section-index">03</p>
+          <div>
+            <p class="section-kicker">World model adaptation</p>
+            <h2>Replaying real actions in generated video</h2>
+            <p class="section-lede">We replay held-out action trajectories and compare autoregressive world model predictions with temporally aligned ground-truth observations.</p>
+          </div>
+        </div>
+
+        <div class="task-switcher" role="group" aria-label="Select world model comparison task">
+          <button class="task-tab is-active" type="button" data-video="media/videos/wm_compare_pnp.mp4" data-task="Pick-and-Place Bottle">Pick-and-Place</button>
+          <button class="task-tab" type="button" data-video="media/videos/wm_compare_ptp.mp4" data-task="Pick-Turn-Place Bottle">Pick-Turn-Place</button>
+          <button class="task-tab" type="button" data-video="media/videos/wm_compare_basket.mp4" data-task="Bimanual Move Basket">Bimanual Basket</button>
+        </div>
+
+        <figure class="comparison-stage">
+          <video id="wm-comparison-video" muted loop playsinline controls preload="metadata" data-autoplay>
+            <source src="media/videos/wm_compare_pnp.mp4" type="video/mp4">
+          </video>
+          <figcaption>
+            <strong id="wm-comparison-task">Pick-and-Place Bottle.</strong>
+            The generated rollout remains aligned with the recorded egocentric trajectory under the same actions.
+          </figcaption>
+        </figure>
+
+        <div class="metric-panel">
+          <div class="metric-intro">
+            <span class="media-label">PLAY DATA MID-TRAINING</span>
+            <h3>Improves every fidelity metric</h3>
+            <p>The interaction-region gain is consistently larger than the global PSNR gain, indicating that play data is particularly useful around the robot hands and manipulated objects.</p>
+          </div>
+          <div class="metric-grid" aria-label="World model fidelity improvements">
+            <div class="metric-card">
+              <span>Pick-and-Place</span>
+              <strong>+1.24</strong>
+              <small>PSNR</small>
+              <strong>+1.59</strong>
+              <small>interaction PSNR</small>
+            </div>
+            <div class="metric-card">
+              <span>Pick-Turn-Place</span>
+              <strong>+0.70</strong>
+              <small>PSNR</small>
+              <strong>+0.90</strong>
+              <small>interaction PSNR</small>
+            </div>
+            <div class="metric-card">
+              <span>Bimanual Basket</span>
+              <strong>+0.85</strong>
+              <small>PSNR</small>
+              <strong>+1.01</strong>
+              <small>interaction PSNR</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-dark reveal">
+      <div class="container is-max-widescreen">
+        <div class="section-heading light-heading">
+          <p class="section-index">04</p>
+          <div>
+            <p class="section-kicker">Closed-loop policy improvement</p>
+            <h2>The VLA acts inside the world model</h2>
+            <p class="section-lede">The VLA predicts actions from generated observations, the world model advances under those actions, and the cycle repeats recursively. A progress model converts each generated trajectory into dense rewards.</p>
+          </div>
+        </div>
+
+        <div class="rollout-grid">
+          <article class="rollout-card">
+            <video muted loop playsinline controls preload="metadata" data-autoplay>
+              <source src="media/videos/wm_rollout_pnp.mp4" type="video/mp4">
+            </video>
+            <h3>Pick-and-Place Bottle</h3>
+          </article>
+          <article class="rollout-card">
+            <video muted loop playsinline controls preload="metadata" data-autoplay>
+              <source src="media/videos/wm_rollout_ptp.mp4" type="video/mp4">
+            </video>
+            <h3>Pick-Turn-Place Bottle</h3>
+          </article>
+          <article class="rollout-card">
+            <video muted loop playsinline controls preload="metadata" data-autoplay>
+              <source src="media/videos/wm_rollout_basket.mp4" type="video/mp4">
+            </video>
+            <h3>Bimanual Move Basket</h3>
+          </article>
+        </div>
+
+        <figure class="paper-figure progress-figure">
+          <img src="media/figures/wm_progress_snapshots.png" alt="Dense progress prediction over a world model rollout" loading="lazy">
+          <figcaption>Stage-aware progress provides step-level credit, including on failed and suboptimal world model rollouts.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section id="results" class="section reveal">
+      <div class="container is-max-widescreen">
+        <div class="section-heading">
+          <p class="section-index">05</p>
+          <div>
+            <p class="section-kicker">Real-robot evaluation</p>
+            <h2>World model RL improves all three tasks</h2>
+            <p class="section-lede">World model and real-robot success rise together over 15 DICE-RL rounds, while direct simulator RL does not provide a reliable transfer signal.</p>
+          </div>
+        </div>
+
+        <figure class="results-video">
+          <video muted loop playsinline controls preload="metadata" poster="media/figures/online_rl_three_tasks.png" data-autoplay>
+            <source src="media/videos/online_rl_three_tasks.mp4" type="video/mp4">
+          </video>
+          <figcaption>Autonomous real-robot executions and per-round policy improvement across the three tasks.</figcaption>
+        </figure>
+
+        <div class="result-summary">
+          <div>
+            <span>Behavior cloning</span>
+            <strong>23.3%</strong>
+            <small>mean success</small>
+          </div>
+          <div>
+            <span>Real-robot RL</span>
+            <strong>48.3%</strong>
+            <small>mean success</small>
+          </div>
+          <div class="highlight-result">
+            <span>LMAO-World + DICE-RL</span>
+            <strong>75.0%</strong>
+            <small>mean success</small>
+          </div>
+        </div>
+
+        <div class="table-shell">
+          <table class="results-table">
+            <thead>
+              <tr>
+                <th>Method</th>
+                <th>Pick-and-Place</th>
+                <th>Pick-Turn-Place</th>
+                <th>Bimanual Basket</th>
+                <th>Mean</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Behavior cloning</td>
+                <td>40%</td>
+                <td>20%</td>
+                <td>10%</td>
+                <td>23.3%</td>
+              </tr>
+              <tr>
+                <td>Real-robot RL</td>
+                <td>60%</td>
+                <td>45%</td>
+                <td>40%</td>
+                <td>48.3%</td>
+              </tr>
+              <tr>
+                <td>AWR</td>
+                <td>75%</td>
+                <td>70%</td>
+                <td><strong>70%</strong></td>
+                <td>71.7%</td>
+              </tr>
+              <tr>
+                <td>ReinFlow</td>
+                <td>60%</td>
+                <td>50%</td>
+                <td>45%</td>
+                <td>51.7%</td>
+              </tr>
+              <tr class="best-row">
+                <td>DICE-RL</td>
+                <td><strong>85%</strong></td>
+                <td><strong>75%</strong></td>
+                <td>65%</td>
+                <td><strong>75.0%</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="ablation-row" aria-label="Ablation mean success rates">
+          <div><span>Sparse reward</span><strong>45.0%</strong></div>
+          <div><span>Fixed offline rollouts</span><strong>58.3%</strong></div>
+          <div><span>Without play data</span><strong>63.3%</strong></div>
+          <div class="full-method"><span>Full pipeline</span><strong>75.0%</strong></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section takeaway-section reveal">
+      <div class="container is-max-desktop">
+        <div class="section-heading centered-heading">
+          <p class="section-index">06</p>
+          <h2>What makes the pipeline work?</h2>
+        </div>
+        <div class="takeaway-grid">
+          <article>
+            <span>Coverage</span>
+            <h3>Play data</h3>
+            <p>Broad contact and locomotion experience improves world model fidelity and downstream optimization.</p>
+          </article>
+          <article>
+            <span>Credit</span>
+            <h3>Dense progress</h3>
+            <p>Step-level rewards extract learning signal from successful, failed, and partially completed rollouts.</p>
+          </article>
+          <article>
+            <span>Distribution</span>
+            <h3>Online refresh</h3>
+            <p>Regenerating trajectories as the policy changes avoids optimizing against a stale behavior distribution.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section citation-section reveal">
+      <div class="container is-max-desktop">
+        <div class="section-heading">
+          <p class="section-index">07</p>
+          <div>
+            <p class="section-kicker">Citation</p>
+            <h2>Anonymous review version</h2>
+          </div>
+        </div>
+        <pre><code>@article{anonymous2026lmaoworld,
+  title  = {LMAO-World: Loco-Manipulation VLA Optimization
+            inside a World Model},
+  author = {Anonymous Authors},
+  year   = {2026}
+}</code></pre>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer site-footer">
+    <div class="container is-max-desktop">
+      <p>LMAO-World anonymous project page.</p>
+      <p class="template-credit">Academic page structure adapted from the Nerfies project-page format.</p>
+    </div>
+  </footer>
+</body>
+</html>
