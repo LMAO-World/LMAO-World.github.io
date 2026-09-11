@@ -54,12 +54,12 @@
                 </svg>
                 <span>Paper</span>
               </a>
-              <span class="project-button is-disabled" aria-disabled="true">
+              <a class="project-button" href="#project-video">
                 <svg viewBox="0 0 24 24" aria-hidden="true">
                   <path d="m9 7 8 5-8 5zM3 4h18v16H3z"/>
                 </svg>
-                <span>Video finalizing</span>
-              </span>
+                <span>Video</span>
+              </a>
               <span class="project-button is-disabled" aria-disabled="true">
                 <svg viewBox="0 0 24 24" aria-hidden="true">
                   <path d="m8 9-4 3 4 3M16 9l4 3-4 3M14 5l-4 14"/>
@@ -69,16 +69,11 @@
             </div>
           </div>
 
-          <!-- Replace this block with media/videos/hero.mp4 when the final cut is ready. -->
-          <div class="hero-video-placeholder" role="img" aria-label="Project video placeholder">
-            <div class="placeholder-grid"></div>
-            <div class="placeholder-track track-one"></div>
-            <div class="placeholder-track track-two"></div>
-            <div class="placeholder-content">
-              <span class="placeholder-kicker">PROJECT VIDEO</span>
-              <strong>Final cut in progress</strong>
-              <span>The complete system overview will appear here.</span>
-            </div>
+          <div class="hero-video-shell">
+            <video id="project-video" controls playsinline preload="metadata" poster="media/figures/hero_poster.jpg">
+              <source src="media/videos/hero.mp4" type="video/mp4">
+              Your browser does not support embedded MP4 video.
+            </video>
           </div>
 
           <div class="stat-strip" aria-label="Project highlights">

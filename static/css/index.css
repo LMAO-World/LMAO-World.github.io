@@ -122,8 +122,7 @@ strong {
 
 .eyebrow,
 .section-kicker,
-.media-label,
-.placeholder-kicker {
+.media-label {
   margin: 0 0 0.8rem;
   color: var(--orange);
   font-size: 0.73rem;
@@ -211,86 +210,21 @@ a.project-button:focus-visible {
   cursor: default;
 }
 
-.hero-video-placeholder {
+.hero-video-shell {
   position: relative;
-  min-height: min(62vw, 640px);
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 28px;
-  color: #f6f1e7;
-  background:
-    radial-gradient(circle at 72% 28%, rgba(230, 185, 79, 0.32), transparent 19rem),
-    radial-gradient(circle at 18% 74%, rgba(44, 103, 160, 0.42), transparent 24rem),
-    linear-gradient(135deg, #0d2929, #173b38 50%, #102725);
+  background: #07100e;
   box-shadow: var(--shadow);
   animation: rise-in 780ms 100ms ease both;
 }
 
-.placeholder-grid {
-  position: absolute;
-  inset: 0;
-  opacity: 0.18;
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.22) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.22) 1px, transparent 1px);
-  background-size: 54px 54px;
-  mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent);
-}
-
-.placeholder-track {
-  position: absolute;
-  width: 42%;
-  height: 42%;
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  border-radius: 50%;
-}
-
-.track-one {
-  top: 16%;
-  right: 8%;
-  transform: rotate(-16deg);
-}
-
-.track-two {
-  bottom: -12%;
-  left: 3%;
-  border-color: rgba(226, 104, 69, 0.45);
-  transform: rotate(21deg);
-}
-
-.hero-video-placeholder::after {
-  content: "";
-  position: absolute;
-  top: -20%;
-  bottom: -20%;
-  left: -16%;
-  width: 18%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
-  transform: skewX(-14deg);
-  animation: scan 5.5s ease-in-out infinite;
-}
-
-.placeholder-content {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
-  text-align: center;
-}
-
-.placeholder-content strong {
-  font-family: var(--display);
-  font-size: clamp(2.2rem, 5vw, 4.5rem);
-  font-weight: 500;
-  letter-spacing: -0.04em;
-}
-
-.placeholder-content span:last-child {
-  margin-top: 0.55rem;
-  color: rgba(246, 241, 231, 0.72);
+.hero-video-shell video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #07100e;
 }
 
 .stat-strip {
@@ -1033,13 +967,8 @@ figcaption {
     font-size: clamp(3.6rem, 20vw, 5.5rem);
   }
 
-  .hero-video-placeholder {
-    min-height: 62vw;
+  .hero-video-shell {
     border-radius: 18px;
-  }
-
-  .placeholder-content strong {
-    font-size: 2rem;
   }
 
   .stat {
