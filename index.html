@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="LMAO-World: teleoperation-free world model reinforcement learning for whole-body humanoid loco-manipulation.">
+  <meta name="description" content="LMAO-World combines simulation and a deployment-aligned video world model for teleoperation-free whole-body humanoid policy improvement.">
   <meta name="keywords" content="humanoid robotics, world models, reinforcement learning, vision-language-action models, loco-manipulation">
   <meta name="author" content="Anonymous Authors">
   <meta name="robots" content="noindex, nofollow, noarchive">
@@ -91,7 +91,7 @@
             </div>
             <div class="stat">
               <strong>75.0%</strong>
-              <span>mean DICE-RL success</span>
+              <span>mean video WM RL success</span>
             </div>
           </div>
         </div>
@@ -106,7 +106,7 @@
         </div>
         <div class="abstract-copy">
           <p>
-            Reinforcement learning can improve vision-language-action policies beyond imitation, but real-robot exploration is costly and unsafe for humanoids, while direct optimization in reconstructed simulators can amplify sim-to-real errors. We present <strong>LMAO-World</strong>, a teleoperation-free pipeline that post-trains a synthetic-data humanoid VLA inside an action-conditioned video world model. A 3D Gaussian Splatting simulator supplies task demonstrations and manipulation and locomotion play data; 20 autonomous real-robot rollouts per task adapt the world model to deployment observations. Policy rollouts then couple generated video with whole-body dynamics and receive dense stage-aware progress rewards. Across three real-robot tasks, play data improves every evaluated world model metric, and DICE-RL raises mean success from 23.3% for behavior cloning to 75.0%.
+            Reinforcement learning can improve vision-language-action policies beyond imitation, but humanoid exploration is unsafe and simulator RL can exploit residual sim-to-real gaps. We present <strong>LMAO-World</strong>, a teleoperation-free framework for post-training a whole-body humanoid VLA in an action-conditioned video world model. Simulated manipulation and locomotion play data improve contact-dynamics and viewpoint-change prediction. A VLA trained on synthetic demonstrations collects 20 autonomous real robot rollouts per task to align the video WM with deployment observations. The VLA, whole-body controller, and video WM then form a closed-loop RL environment with dense progress rewards. Across three real robot tasks, video WM RL raises mean success from 23.3% to 75.0%, compared with 48.3% for real robot RL. The system leverages complementary environments: simulation provides policy initialization and broad coverage, while the video WM provides a deployment-aligned environment for policy improvement.
           </p>
         </div>
       </div>
@@ -118,32 +118,32 @@
           <p class="section-index">01</p>
           <div>
             <p class="section-kicker">Sim to dream to real</p>
-            <h2>A teleoperation-free policy flywheel</h2>
+            <h2>Complementary roles for simulation and video WM</h2>
           </div>
         </div>
 
         <figure class="paper-figure pipeline-figure">
           <img src="media/figures/pipeline.png" alt="LMAO-World system pipeline" loading="lazy">
           <figcaption>
-            Synthetic demonstrations initialize the VLA, simulated play data broadens world model dynamics, and autonomous real rollouts adapt the world model before policy optimization.
+            The LEGS simulator supplies synthetic task demonstrations and play data. Autonomous real robot rollouts align the video WM with deployment observations, after which the VLA, video WM, and SONIC–MuJoCo whole-body controller form a closed-loop policy-improvement environment with dense progress rewards.
           </figcaption>
         </figure>
 
         <div class="step-grid">
           <article class="step-card">
             <span class="step-number">1</span>
-            <h3>Simulate</h3>
-            <p>The LEGS simulator generates whole-body task demonstrations and broad manipulation and locomotion play data.</p>
+            <h3>Initialize in simulation</h3>
+            <p>The LEGS simulator generates 200 whole-body demonstrations per task for base-VLA training and physically grounded play data for broad dynamics coverage.</p>
           </article>
           <article class="step-card">
             <span class="step-number">2</span>
-            <h3>Adapt</h3>
-            <p>A shared world model is mid-trained on play data, then adapted to each task with synthetic demonstrations and autonomous real rollouts.</p>
+            <h3>Align the video WM</h3>
+            <p>Each task uses 20 autonomous real robot rollouts, balanced between successes and failures, to align generated observations with deployment.</p>
           </article>
           <article class="step-card">
             <span class="step-number">3</span>
-            <h3>Optimize</h3>
-            <p>The VLA acts inside the adapted world model, while a stage-aware progress model supplies dense rewards for round-based RL.</p>
+            <h3>Improve the policy</h3>
+            <p>The current VLA generates 480 on-policy video WM rollouts, while stage-aware progress supplies dense rewards without further robot interaction.</p>
           </article>
         </div>
       </div>
@@ -208,16 +208,16 @@
         <div class="section-heading">
           <p class="section-index">03</p>
           <div>
-            <p class="section-kicker">World model adaptation</p>
-            <h2>Replaying real actions in generated video</h2>
-            <p class="section-lede">We replay held-out action trajectories and compare autoregressive world model predictions with temporally aligned ground-truth observations.</p>
+            <p class="section-kicker">Deployment-aligned video WM</p>
+            <h2>Replaying real actions through generated observations</h2>
+            <p class="section-lede">We replay held-out action trajectories and compare autoregressive video WM predictions with temporally aligned ground-truth observations.</p>
           </div>
         </div>
 
-        <div class="task-switcher" role="group" aria-label="Select world model comparison task">
-          <button class="task-tab is-active" type="button" data-video="media/videos/wm_compare_pnp.mp4" data-task="Pick-and-Place Bottle">Pick-and-Place</button>
-          <button class="task-tab" type="button" data-video="media/videos/wm_compare_ptp.mp4" data-task="Pick-Turn-Place Bottle">Pick-Turn-Place</button>
-          <button class="task-tab" type="button" data-video="media/videos/wm_compare_basket.mp4" data-task="Bimanual Move Basket">Bimanual Basket</button>
+        <div class="task-switcher" role="group" aria-label="Select video WM comparison task">
+          <button class="task-tab is-active" type="button" data-video="media/videos/wm_compare_pnp.mp4" data-task="Pick-and-Place Bottle">Pick-and-Place Bottle</button>
+          <button class="task-tab" type="button" data-video="media/videos/wm_compare_ptp.mp4" data-task="Pick-Turn-Place Bottle">Pick-Turn-Place Bottle</button>
+          <button class="task-tab" type="button" data-video="media/videos/wm_compare_basket.mp4" data-task="Bimanual Move Basket">Bimanual Move Basket</button>
         </div>
 
         <figure class="comparison-stage">
@@ -234,25 +234,25 @@
           <div class="metric-intro">
             <span class="media-label">PLAY DATA MID-TRAINING</span>
             <h3>Improves every fidelity metric</h3>
-            <p>The interaction-region gain is consistently larger than the global PSNR gain, indicating that play data is particularly useful around the robot hands and manipulated objects.</p>
+            <p>Under a matched 45,000-step budget, play data improves average PSNR by 0.93 dB and interaction-region PSNR by 1.17 dB. The larger interaction-region gain indicates stronger modeling around the robot hands and manipulated objects.</p>
           </div>
           <div class="metric-grid" aria-label="World model fidelity improvements">
             <div class="metric-card">
-              <span>Pick-and-Place</span>
+              <span>Pick-and-Place Bottle</span>
               <strong>+1.24</strong>
               <small>PSNR</small>
               <strong>+1.59</strong>
               <small>interaction PSNR</small>
             </div>
             <div class="metric-card">
-              <span>Pick-Turn-Place</span>
+              <span>Pick-Turn-Place Bottle</span>
               <strong>+0.70</strong>
               <small>PSNR</small>
               <strong>+0.90</strong>
               <small>interaction PSNR</small>
             </div>
             <div class="metric-card">
-              <span>Bimanual Basket</span>
+              <span>Bimanual Move Basket</span>
               <strong>+0.85</strong>
               <small>PSNR</small>
               <strong>+1.01</strong>
@@ -269,8 +269,8 @@
           <p class="section-index">04</p>
           <div>
             <p class="section-kicker">Closed-loop policy improvement</p>
-            <h2>The VLA acts inside the world model</h2>
-            <p class="section-lede">The VLA predicts actions from generated observations, the world model advances under those actions, and the cycle repeats recursively. A progress model converts each generated trajectory into dense rewards.</p>
+            <h2>The VLA acts inside the video WM</h2>
+            <p class="section-lede">Each video WM call receives one seed frame and achieved 43-DoF joint states, then generates 12 future views. The terminal generated frame seeds the next call, closing the recurrent VLA–WBC–video WM loop. A progress model converts each trajectory into dense rewards.</p>
           </div>
         </div>
 
@@ -296,8 +296,8 @@
         </div>
 
         <figure class="paper-figure progress-figure">
-          <img src="media/figures/wm_progress_snapshots.png" alt="Dense progress prediction over a world model rollout" loading="lazy">
-          <figcaption>Stage-aware progress provides step-level credit, including on failed and suboptimal world model rollouts.</figcaption>
+          <img src="media/figures/wm_progress_snapshots.png" alt="Dense progress prediction over a video WM rollout" loading="lazy">
+          <figcaption>Stage-aware progress provides step-level credit, including on failed and suboptimal video WM rollouts.</figcaption>
         </figure>
       </div>
     </section>
@@ -307,9 +307,9 @@
         <div class="section-heading">
           <p class="section-index">05</p>
           <div>
-            <p class="section-kicker">Real-robot evaluation</p>
-            <h2>World model RL improves all three tasks</h2>
-            <p class="section-lede">World model and real-robot success rise together over 15 DICE-RL rounds, while direct simulator RL does not provide a reliable transfer signal.</p>
+            <p class="section-kicker">Real robot evaluation</p>
+            <h2>Video WM RL improves all three tasks</h2>
+            <p class="section-lede">Video WM and real robot success rise together over 15 RL rounds. In contrast, direct simulator RL reduces real robot success on every task, showing that simulation is effective for initialization but not final policy improvement.</p>
           </div>
         </div>
 
@@ -317,7 +317,7 @@
           <video muted loop playsinline controls preload="metadata" poster="media/figures/online_rl_three_tasks.png" data-autoplay>
             <source src="media/videos/online_rl_three_tasks.mp4" type="video/mp4">
           </video>
-          <figcaption>Autonomous real-robot executions and per-round policy improvement across the three tasks.</figcaption>
+          <figcaption>Autonomous real robot executions and DICE-RL policy improvement across the three tasks. Video WM success tracks real robot success more closely than LEGS simulator success.</figcaption>
         </figure>
 
         <div class="result-summary">
@@ -327,12 +327,17 @@
             <small>mean success</small>
           </div>
           <div>
-            <span>Real-robot RL</span>
+            <span>Simulator RL</span>
+            <strong>10.0%</strong>
+            <small>mean success</small>
+          </div>
+          <div>
+            <span>Real robot RL</span>
             <strong>48.3%</strong>
             <small>mean success</small>
           </div>
           <div class="highlight-result">
-            <span>LMAO-World + DICE-RL</span>
+            <span>Video WM RL</span>
             <strong>75.0%</strong>
             <small>mean success</small>
           </div>
@@ -343,13 +348,16 @@
             <thead>
               <tr>
                 <th>Method</th>
-                <th>Pick-and-Place</th>
-                <th>Pick-Turn-Place</th>
-                <th>Bimanual Basket</th>
+                <th>Pick-and-Place Bottle</th>
+                <th>Pick-Turn-Place Bottle</th>
+                <th>Bimanual Move Basket</th>
                 <th>Mean</th>
               </tr>
             </thead>
             <tbody>
+              <tr class="table-group">
+                <td colspan="5">Baselines</td>
+              </tr>
               <tr>
                 <td>Behavior cloning</td>
                 <td>40%</td>
@@ -358,11 +366,35 @@
                 <td>23.3%</td>
               </tr>
               <tr>
-                <td>Real-robot RL</td>
+                <td>Real robot RL</td>
                 <td>60%</td>
                 <td>45%</td>
                 <td>40%</td>
                 <td>48.3%</td>
+              </tr>
+              <tr>
+                <td>Simulator RL</td>
+                <td>30%</td>
+                <td>0%</td>
+                <td>0%</td>
+                <td>10.0%</td>
+              </tr>
+              <tr>
+                <td>VLAW</td>
+                <td>45%</td>
+                <td>20%</td>
+                <td>35%</td>
+                <td>33.3%</td>
+              </tr>
+              <tr>
+                <td>WMPO</td>
+                <td>55%</td>
+                <td>30%</td>
+                <td>35%</td>
+                <td>40.0%</td>
+              </tr>
+              <tr class="table-group">
+                <td colspan="5">RL algorithms in LMAO-World</td>
               </tr>
               <tr>
                 <td>AWR</td>
@@ -402,23 +434,28 @@
       <div class="container is-max-desktop">
         <div class="section-heading centered-heading">
           <p class="section-index">06</p>
-          <h2>What makes the pipeline work?</h2>
+          <h2>How the two environments work together</h2>
         </div>
         <div class="takeaway-grid">
           <article>
+            <span>Initialization</span>
+            <h3>Synthetic demonstrations</h3>
+            <p>Photorealistic simulation trains a whole-body base policy with enough hardware success to collect autonomous deployment experience.</p>
+          </article>
+          <article>
             <span>Coverage</span>
             <h3>Play data</h3>
-            <p>Broad contact and locomotion experience improves world model fidelity and downstream optimization.</p>
+            <p>Physically grounded manipulation and locomotion experience improves contact dynamics and consistency under large viewpoint changes.</p>
           </article>
           <article>
-            <span>Credit</span>
-            <h3>Dense progress</h3>
-            <p>Step-level rewards extract learning signal from successful, failed, and partially completed rollouts.</p>
+            <span>Alignment</span>
+            <h3>Real robot rollouts</h3>
+            <p>Limited autonomous successes and failures align the video WM with deployment observations and cross the remaining visual gap.</p>
           </article>
           <article>
-            <span>Distribution</span>
-            <h3>Online refresh</h3>
-            <p>Regenerating trajectories as the policy changes avoids optimizing against a stale behavior distribution.</p>
+            <span>Improvement</span>
+            <h3>Dense on-policy RL</h3>
+            <p>Dense progress and on-policy training extract useful signal from successful, failed, and suboptimal video WM rollouts.</p>
           </article>
         </div>
       </div>
